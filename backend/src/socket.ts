@@ -5,8 +5,9 @@ import User from './models/User';
 export const setupSocket = (server: any) => {
     const io = new Server(server, {
         cors: {
-            origin: "*",
-            methods: ["GET", "POST"]
+            origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : "*",
+            methods: ["GET", "POST"],
+            credentials: true
         }
     });
 

@@ -43,7 +43,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
     useEffect(() => {
         if (token && !socket) {
-            const backendUrl = 'http://localhost:5000';
+            const backendUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
             console.log(`📡 Initializing Sincerity Stream on ${backendUrl}`);
 
             const newSocket = io(backendUrl, {
