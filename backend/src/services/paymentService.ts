@@ -3,7 +3,7 @@ import Transaction from '../models/Transaction';
 import HelpRequest from '../models/HelpRequest';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_mock', {
-    apiVersion: '2025-01-27.preview.v2', // Updated to latest
+    apiVersion: '2025-01-27.preview.v2' as any,
 });
 
 export const createPaymentIntent = async (amount: number, currency: string = 'inr') => {

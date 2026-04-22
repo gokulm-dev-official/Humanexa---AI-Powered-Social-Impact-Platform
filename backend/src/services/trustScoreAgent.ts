@@ -70,7 +70,7 @@ class TrustScoreAgent {
             }
 
             // ── Factor 1: Account Age (0..1) ──
-            const accountAgeMs = Date.now() - new Date(user.createdAt as any).getTime();
+            const accountAgeMs = Date.now() - new Date((user as any).createdAt).getTime();
             const accountAgeDays = accountAgeMs / (1000 * 60 * 60 * 24);
             let accountAge = 0;
             if (accountAgeDays > 365) accountAge = 1.0;

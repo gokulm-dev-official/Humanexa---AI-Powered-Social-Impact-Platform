@@ -97,8 +97,8 @@ export const getAvailableRequests = async (req: AuthRequest, res: Response) => {
 
         if (!queryLat || !queryLng) {
             if (req.user?.address?.coordinates?.coordinates) {
-                queryLng = req.user.address.coordinates.coordinates[0];
-                queryLat = req.user.address.coordinates.coordinates[1];
+                queryLng = req.user.address.coordinates.coordinates[0] as any;
+                queryLat = req.user.address.coordinates.coordinates[1] as any;
             }
         }
 
@@ -358,7 +358,7 @@ export const donateToBroadcast = async (req: AuthRequest, res: Response) => {
         let formalReceipt = null;
         try {
             formalReceipt = await generateReceipt(
-                transaction._id.toString(),
+                (transaction as any)._id.toString(),
                 (req as any).user!._id.toString(),
                 helpRequest._id.toString(),
                 donationType as 'ESCROW' | 'DIRECT',

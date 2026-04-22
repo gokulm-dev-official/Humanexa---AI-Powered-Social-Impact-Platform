@@ -34,7 +34,7 @@ router.post('/institution/members', protect, async (req: any, res) => {
         const { name, age, photo } = req.body;
         if (!name) return res.status(400).json({ status: 'fail', message: 'Name is required' });
 
-        if (!user.institutionMembers) (user as any).institutionMembers = [];
+        if (!(user as any).institutionMembers) (user as any).institutionMembers = [];
         (user as any).institutionMembers.push({ name, age, photo, addedAt: new Date() });
         await user.save();
 
