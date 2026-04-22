@@ -7,8 +7,8 @@ import { useAuth } from '../../hooks/useAuth';
 import { useNotifications } from '../../context/NotificationContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const appleSpring = { type: 'spring', damping: 30, stiffness: 400 };
-const appleFade = { duration: 0.25, ease: [0.25, 0.1, 0.25, 1] };
+const appleSpring = { type: 'spring', damping: 30, stiffness: 400 } as any;
+const appleFade = { duration: 0.25, ease: [0.25, 0.1, 0.25, 1] } as any;
 
 export const Navbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -300,7 +300,7 @@ export const Navbar = () => {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+                        transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] } as any}
                         className="md:hidden overflow-hidden bg-white/95 backdrop-blur-xl border-b border-black/[0.06]"
                     >
                         <div className="px-5 py-4 space-y-1">

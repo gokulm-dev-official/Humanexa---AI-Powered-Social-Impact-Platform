@@ -711,7 +711,7 @@ const DashboardPage = () => {
 
                                                         <div className="flex items-center gap-2">
                                                             <Badge
-                                                                variant={donation.status === 'completed' ? 'success' : 'danger'}
+                                                                variant={donation.status === 'completed' ? 'success' : 'error'}
                                                                 size="sm"
                                                             >
                                                                 {donation.status === 'completed' ? 'Completed' : 'Refunded'}
@@ -900,7 +900,7 @@ const DashboardPage = () => {
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            transition={appleSpring}
+                            transition={appleSpring as any}
                             className="w-[440px] max-w-full bg-white rounded-2xl shadow-soft-2xl overflow-hidden"
                             onClick={(e) => e.stopPropagation()}
                         >

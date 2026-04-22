@@ -241,7 +241,7 @@ const LiveImpactPage = () => {
 
     useEffect(() => {
         if (token) {
-            socketRef.current = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000', { auth: { token } });
+            socketRef.current = io((import.meta as any).env.VITE_SOCKET_URL || 'http://localhost:5000', { auth: { token } });
 
             socketRef.current.on('impact:new-need', (newChat) => {
                 setChats(prev => [newChat, ...prev]);

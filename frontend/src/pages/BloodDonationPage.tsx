@@ -248,7 +248,7 @@ const BloodDonationPage: React.FC = () => {
                             )}
                         >
                             {t.icon} {t.label}
-                            {t.count > 0 && <Badge variant="danger" size="sm">{t.count}</Badge>}
+                            {t.count > 0 && <Badge variant="error" size="sm">{t.count}</Badge>}
                         </button>
                     ))}
                 </div>

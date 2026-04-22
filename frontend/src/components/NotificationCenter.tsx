@@ -22,7 +22,7 @@ const NotificationCenter = () => {
     useEffect(() => {
         if (!token) return;
 
-        const socket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000', { auth: { token } });
+        const socket = io((import.meta as any).env.VITE_SOCKET_URL || 'http://localhost:5000', { auth: { token } });
 
         socket.on('notification', (data) => {
             const newNotif: Notification = {
