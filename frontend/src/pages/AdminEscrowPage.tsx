@@ -46,14 +46,34 @@ const AdminEscrowPage: React.FC = () => {
     };
 
     const handleReject = async (chatId: string) => {
+        const confirmReject = window.confirm('Are you sure you want to reject this proof and refund the donor?');
+        if (!confirmReject) return;
+
         setActionLoading(chatId);
         try {
-            // Trigger refund
-            await api.post(`/impact-chat/${chatId}/complete`, { adminRejected: true, refund: true });
-            setChats(prev => prev.map(c => c._id === chatId ? { ...c, status: 'refunded' } : c));
-            setSelectedChat(null);
+            const res = await api.post(`/impact-chat/${chatId}/complete`, { adminRejected: true, refund: true });
+            if (res.data?.status === 'success') {
+                setChats(prev => prev.map(c => c._id === chatId ? { ...c, status: 'refunded' } : c));
+                setSelectedChat(null);
+                alert('Proof rejected. Funds have been refunded to the donor.');
+            } else {
+                alert(res.data?.message || 'Unexpected response from server');
+            }
         } catch (err: any) {
-            alert(err.response?.data?.message || 'Failed to refund');
+            const msg = err.response?.data?.message || err.message || 'Failed to refund';
+            const status = err.response?.status;
+            if (status === 403) {
+                alert('Access Denied: Your account does not have admin privileges. Please log in via the Admin Console.');
+            } else if (status === 400) {
+                alert(`Cannot reject: ${msg}. The chat status may have already changed.`);
+                // Refresh the list to get latest data
+                fetchEscrowChats();
+            } else if (status === 404) {
+                alert('This chat no longer exists.');
+                fetchEscrowChats();
+            } else {
+                alert(`Error: ${msg}`);
+            }
         } finally {
             setActionLoading(null);
         }
