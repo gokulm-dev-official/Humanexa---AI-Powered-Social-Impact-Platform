@@ -422,7 +422,7 @@ export const completeImpact = async (req: AuthRequest, res: Response) => {
             if (io && chat.helperId) {
                 NotificationService.sendSignal(chat.helperId.toString(), {
                     text: `Your proof photo was rejected by admin. The donation has been refunded to the donor(s).`,
-                    type: 'error',
+                    type: 'warning',
                     metadata: { chatId: chat._id }
                 });
             }
