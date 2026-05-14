@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface ITransaction extends Document {
     user: mongoose.Types.ObjectId;
-    type: 'donation' | 'payout' | 'escrow_lock' | 'escrow_release';
+    type: 'donation' | 'payout' | 'escrow_lock' | 'escrow_release' | 'refund';
     amount: number;
     status: 'pending' | 'completed' | 'failed' | 'refunded';
     referenceId: string;
@@ -26,7 +26,7 @@ export interface ITransaction extends Document {
 
 const TransactionSchema: Schema = new Schema({
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
-    type: { type: String, enum: ['donation', 'payout', 'escrow_lock', 'escrow_release'], required: true },
+    type: { type: String, enum: ['donation', 'payout', 'escrow_lock', 'escrow_release', 'refund'], required: true },
     amount: { type: Number, required: true },
     status: { type: String, enum: ['pending', 'completed', 'failed', 'refunded'], default: 'pending' },
     referenceId: { type: String, required: true, unique: true },

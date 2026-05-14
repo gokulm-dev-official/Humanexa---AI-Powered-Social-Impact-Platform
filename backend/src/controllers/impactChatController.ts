@@ -361,31 +361,73 @@ export const completeImpact = async (req: AuthRequest, res: Response) => {
             chat.status = 'refunded' as any;
             await chat.save();
 
-            if (chat.donorId) {
+            const io = getIo();
+
+            // --- SPLIT MODE REFUND: Refund each contributor individually ---
+            if (chat.splitMode && chat.donorContributions && chat.donorContributions.length > 0) {
+                for (const contribution of chat.donorContributions) {
+                    await Transaction.create({
+                        user: contribution.donorId,
+                        type: 'refund',
+                        amount: contribution.amount,
+                        status: 'refunded',
+                        referenceId: `RFD-SPLIT-${uuidv4()}`,
+                        donationType: contribution.donationType || 'ESCROW',
+                        metadata: {
+                            chatId: chat._id,
+                            reason: `Admin rejected proof — split contribution refund issued`,
+                            splitMode: true,
+                            originalAmount: contribution.amount,
+                        }
+                    });
+
+                    // Notify each contributor
+                    if (io) {
+                        io.to(contribution.donorId.toString()).emit('impact:refunded', chat);
+                        NotificationService.sendSignal(contribution.donorId.toString(), {
+                            text: `Admin rejected proof. Your split contribution of ₹${contribution.amount} has been refunded.`,
+                            type: 'warning',
+                            metadata: { chatId: chat._id }
+                        });
+                    }
+                }
+            }
+            // --- NORMAL (SINGLE DONOR) REFUND ---
+            else if (chat.donorId) {
                 await Transaction.create({
                     user: chat.donorId as any,
                     type: 'refund',
                     amount: chat.amount,
-                    status: 'completed',
+                    status: 'refunded',
                     referenceId: `RFD-${uuidv4()}`,
+                    donationType: (chat as any).donationType || 'ESCROW',
                     metadata: { 
                         chatId: chat._id, 
-                        reason: `Admin rejected proof — refund issued`
+                        reason: `Admin rejected proof — refund issued`,
+                        refundedAmount: chat.amount,
                     }
                 });
+
+                if (io) {
+                    io.to((chat.donorId as any).toString()).emit('impact:refunded', chat);
+                    NotificationService.sendSignal((chat.donorId as any).toString(), {
+                        text: `Proof rejected by admin. ₹${chat.amount} has been refunded to your wallet.`,
+                        type: 'warning',
+                        metadata: { chatId: chat._id }
+                    });
+                }
             }
 
-            const io = getIo();
-            if (io && chat.donorId) {
-                io.to((chat.donorId as any).toString()).emit('impact:refunded', chat);
-                NotificationService.sendSignal((chat.donorId as any).toString(), {
-                    text: `Proof rejected by admin. Funds have been refunded to your wallet.`,
-                    type: 'warning',
+            // Notify the helper that their proof was rejected
+            if (io && chat.helperId) {
+                NotificationService.sendSignal(chat.helperId.toString(), {
+                    text: `Your proof photo was rejected by admin. The donation has been refunded to the donor(s).`,
+                    type: 'error',
                     metadata: { chatId: chat._id }
                 });
             }
 
-            return res.status(200).json({ status: 'success', message: 'Funds refunded to donor.', data: { chat } });
+            return res.status(200).json({ status: 'success', message: 'Funds refunded to donor(s).', data: { chat } });
         }
 
         return res.status(400).json({ status: 'fail', message: 'Invalid request. Provide finalPhoto or adminApproved.' });
